@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoyalX Luxury - Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{background:#0d0d0d;color:#fff;transition:0.4s;}
+body.light{background:#f5f5f5;color:#111;}
+
+header{
+position:fixed;width:100%;top:0;
+background:#000;padding:15px 8%;
+display:flex;justify-content:space-between;align-items:center;
+z-index:1000;
+}
+
+.logo{font-size:22px;font-weight:700;color:#d4af37;}
+
+nav{display:flex;gap:25px;}
+nav a{cursor:pointer;transition:0.3s;}
+nav a:hover{color:#d4af37;}
+
+.toggle-btn{
+background:#d4af37;border:none;padding:6px 12px;
+border-radius:20px;cursor:pointer;font-weight:600;
+}
+
+.hero{
+height:100vh;
+background:url('https://images.unsplash.com/photo-1523170335258-f5c0d6b3a6d3') center/cover no-repeat;
+display:flex;align-items:center;justify-content:center;
+text-align:center;
+}
+
+.hero h1{
+font-size:48px;
+background:linear-gradient(45deg,#d4af37,#f5d76e);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.btn{
+padding:10px 25px;
+background:linear-gradient(45deg,#d4af37,#f5d76e);
+border:none;border-radius:25px;
+cursor:pointer;font-weight:600;
+transition:0.3s;color:#000;
+}
+.btn:hover{transform:scale(1.1);box-shadow:0 0 15px #d4af37;}
+
+section{padding:100px 8%;}
+.section-title{text-align:center;margin-bottom:40px;color:#d4af37;}
+
+.products{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:30px;
+}
+
+.card{
+background:#111;padding:15px;border-radius:15px;
+transition:0.4s;text-align:center;
+}
+.card:hover{transform:translateY(-10px);}
+
+.card img{width:100%;height:220px;object-fit:cover;border-radius:10px;}
+
+.price{color:#d4af37;margin:10px 0;}
+
+.quantity{
+width:60px;padding:5px;margin-bottom:10px;
+}
+
+.cart{
+position:fixed;right:-400px;top:0;width:350px;height:100%;
+background:#111;padding:20px;
+transition:0.4s;overflow:auto;
+}
+.cart.active{right:0;}
+
+.cart h2{color:#d4af37;margin-bottom:20px;}
+
+.cart-item{margin-bottom:10px;font-size:14px;}
+
+.total{margin-top:15px;font-weight:600;color:#d4af37;}
+
+.remove-btn{
+background:red;border:none;color:#fff;
+padding:3px 6px;margin-left:10px;cursor:pointer;
+}
+
+.cart-count{
+background:red;color:#fff;
+padding:2px 6px;border-radius:50%;
+font-size:12px;margin-left:5px;
+}
+
+.reveal{opacity:0;transform:translateY(40px);transition:1s;}
+.reveal.active{opacity:1;transform:translateY(0);}
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="logo">RoyalX Luxury</div>
+<nav>
+<a onclick="toggleCart()">Cart <span id="cartCount" class="cart-count">0</span></a>
+<button class="toggle-btn" onclick="toggleMode()">Mode</button>
+</nav>
+</header>
+
+<div class="hero">
+<h1>Ultimate Luxury Experience</h1>
+</div>
+
+<section>
+<h2 class="section-title reveal">Luxury Collection</h2>
+<div class="products">
+
+<div class="card reveal">
+<img src="https://images.unsplash.com/photo-1518546305927-5a555bb7020d">
+<h3>Royal Gold</h3>
+<p class="price">$899</p>
+<input type="number" min="1" value="1" class="quantity" id="q1">
+<br>
+<button class="btn" onclick="addToCart('Royal Gold',899,'q1')">Add to Cart</button>
+</div>
+
+<div class="card reveal">
+<img src="https://images.unsplash.com/photo-1511497584788-876760111969">
+<h3>Elite Goggles</h3>
+<p class="price">$299</p>
+<input type="number" min="1" value="1" class="quantity" id="q2">
+<br>
+<button class="btn" onclick="addToCart('Elite Goggles',299,'q2')">Add to Cart</button>
+</div>
+
+</div>
+</section>
+
+<div class="cart" id="cart">
+<h2>Your Cart</h2>
+<div id="cartItems"></div>
+<div class="total">Total: $<span id="total">0</span></div>
+<br>
+<button class="btn" onclick="checkout()">Checkout</button>
+</div>
+
+<script>
+let cart=[];
+let total=0;
+
+function toggleCart(){
+document.getElementById("cart").classList.toggle("active");
+}
+
+function addToCart(name,price,qtyId){
+let qty=document.getElementById(qtyId).value;
+let itemTotal=price*qty;
+total+=itemTotal;
+
+cart.push({name,price,qty});
+renderCart();
+}
+
+function renderCart(){
+let cartItems=document.getElementById("cartItems");
+cartItems.innerHTML="";
+cart.forEach((item,index)=>{
+cartItems.innerHTML+=`
+<div class="cart-item">
+${item.name} x${item.qty} - $${item.price*item.qty}
+<button class="remove-btn" onclick="removeItem(${index})">X</button>
+</div>`;
+});
+document.getElementById("total").textContent=total;
+document.getElementById("cartCount").textContent=cart.length;
+}
+
+function removeItem(index){
+total-=cart[index].price*cart[index].qty;
+cart.splice(index,1);
+renderCart();
+}
+
+function checkout(){
+if(cart.length==0){alert("Cart Empty!");return;}
+alert("Order Placed Successfully 🎉");
+cart=[];total=0;renderCart();
+}
+
+function toggleMode(){
+document.body.classList.toggle("light");
+}
+
+/* Scroll Reveal */
+window.addEventListener("scroll",()=>{
+document.querySelectorAll(".reveal").forEach(el=>{
+let windowHeight=window.innerHeight;
+let elementTop=el.getBoundingClientRect().top;
+if(elementTop<windowHeight-50){
+el.classList.add("active");
+}
+});
+});
+</script>
+
+</body>
+</html>
